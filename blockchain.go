@@ -45,18 +45,24 @@ func InsertBlock(spendingUser string, receivingUser string, miner string, amount
 
 
 		if tempBlock==nil {
-			newBlock.Spender=make(map[string]int)
-			newBlock.Receiver=make(map[string]int)
-			newBlock.Receiver[miner]=100
-			newBlock.PrevPointer=tempBlock
-			newBlock.PrevHash="nil"
-			newBlock.CurrentHash=CalculateHash(&newBlock)
-			fmt.Println(miner," successfully mines a block")
-
+			spenderBalance := CalculateBalance(spendingUser, chainHead)
+			if (spenderBalance >= amount) {
+				newBlock.Spender = make(map[string]int)
+				newBlock.Receiver = make(map[string]int)
+				newBlock.Receiver[miner] = 100
+				newBlock.PrevPointer = tempBlock
+				newBlock.PrevHash = "nil"
+				newBlock.CurrentHash = CalculateHash(&newBlock)
+				fmt.Println(miner, " successfully mines a block")
+			} else {
+				fmt.Println(spendingUser, " has insufficient balance for this transaction")
+				return chainHead
+			}
 
 		} else {
 			if spendingUser!="" {
 				spenderBalance := CalculateBalance(spendingUser, chainHead)
+
 				if (spenderBalance > amount) {
 					newBlock.Spender = make(map[string]int)
 					newBlock.Receiver = make(map[string]int)
